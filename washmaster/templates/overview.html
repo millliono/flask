@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Overview{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  {% if g.user %}
+    <div>Hello {{g.user.username}}</div>
+    {% if available %}
+        <div>The washing machine is available</div>
+    {% else %}
+        <div>The washing machine is used by {{ active_username }} and will be available in {{ minutes_remaining }} minutes.</div>
+    {% endif %}
+    <div>You have {{ credits }} credits remaining.</div>
+
+    <!-- show the button -->
+    {% if available %}
+        <a href="{{ url_for('index') }}?action=start">Start</a>
+    {% elif active_username == g.user['username'] %}
+        <a href="{{ url_for('index') }}?action=cancel">Cancel</a>
+    {% else %}
+        <a disabled>RUNNING...</a>
+    {% endif %}
+
+  {% endif %}
+
+  <script>
+    function removeQueryParams() {
+      // Get the current URL without the query parameters
+      const baseUrl = window.location.origin + window.location.pathname;
+      
+      // Update the browser's URL without reloading the page
+      window.history.replaceState({}, document.title, baseUrl);
+    }
+    removeQueryParams();
+  </script>
+{% endblock %}

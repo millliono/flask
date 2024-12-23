@@ -16,9 +16,9 @@
 
     <!-- show the button -->
     {% if available %}
-        <a href="{{ url_for('index') }}?action=start">Start</a>
+        <a href="{{ url_for('overview.index') }}?action=start">Start</a>
     {% elif active_username == g.user['username'] %}
-        <a href="{{ url_for('index') }}?action=cancel">Cancel</a>
+        <a href="{{ url_for('overview.index') }}?action=cancel">Cancel</a>
     {% else %}
         <a disabled>RUNNING...</a>
     {% endif %}

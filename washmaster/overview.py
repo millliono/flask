@@ -20,12 +20,13 @@ active_username = None
 started_timestamp = None
 
 WASH_CYCLE_MINUTES = 80
+WASH_CYCLE_COST = 5
 
 
 def decrease_credits():
     db = get_db()
     db.execute(
-        "UPDATE user SET credits = credits - 1 WHERE username = ?", (g.user['username'],)
+        "UPDATE user SET credits = credits - ? WHERE username = ?", (WASH_CYCLE_COST, g.user['username'])
     )
     db.commit()
     g.user = (
@@ -51,7 +52,7 @@ def index():
         if action == 'start':
             if active_username:
                 flash('*WASHER BUSY*')
-            elif g.user['credits'] < 1:
+            elif g.user['credits'] < WASH_CYCLE_COST:
                 flash('*NOT ENOUGH CREDITS*')
             else:
                 active_username = g.user['username']

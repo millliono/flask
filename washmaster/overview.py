@@ -22,6 +22,11 @@ started_timestamp = None
 WASH_CYCLE_MINUTES = 80
 WASH_CYCLE_COST = 5
 
+server = 'https://shelly-149-eu.shelly.cloud'
+apikey = 'MmJmMDM4dWlk7FA603986E0FEE7CDEFE52E5F53A96EBCD7BC7196DF0856E6AE90EA4B9E3D68E57F97605E0C5028D'
+device_id = 'b0b21c10f7fc'
+
+
 
 def decrease_credits():
     db = get_db()
@@ -34,7 +39,7 @@ def decrease_credits():
     )
 
 
-def on_timer_end():
+def washer_off():
     global active_username, started_timestamp
     # call the api
     active_username = None
@@ -59,14 +64,15 @@ def index():
                 started_timestamp = datetime.now()
                 decrease_credits()
                 # call api
-                timer = Timer(60 * WASH_CYCLE_MINUTES, on_timer_end)
+                timer = Timer(60 * WASH_CYCLE_MINUTES, washer_off)
                 timer.start()
                 flash('*WASHER ON*')
         elif action == 'cancel':
-            active_username = None
-            started_timestamp = None
-            # call api, optionally
-            flash('*WASHER OFF*')
+            if active_username != g.user['username']:
+                flash("*WASHER ALREADY OFF*")
+            else:
+                washer_off()
+                flash('*WASHER OFF*')
         
         return redirect(url_for('overview.index'))
 

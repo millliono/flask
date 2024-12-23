@@ -5,34 +5,22 @@
 {% endblock %}
 
 {% block content %}
-  {% if g.user %}
-    <div>Hello {{g.user.username}}</div>
+    <div>Hello {{ g.user.username }}, you have [{{ credits }}] credits.</div>
     {% if available %}
-        <div>The washing machine is available</div>
-    {% else %}
-        <div>The washing machine is used by {{ active_username }} and will be available in {{ minutes_remaining }} minutes.</div>
-    {% endif %}
-    <div>You have {{ credits }} credits remaining.</div>
-
-    <!-- show the button -->
-    {% if available %}
-        <a href="{{ url_for('overview.index') }}?action=start">Start</a>
+      <div>Washer --> available</div>
+      <form method="POST" action="{{ url_for('overview.index') }}">
+        <input type="hidden" name="action" value="start">
+        <button type="submit">Start washing</button>
+      </form>
     {% elif active_username == g.user['username'] %}
-        <a href="{{ url_for('overview.index') }}?action=cancel">Cancel</a>
+      <div>WASHING....[{{ minutes_remaining }} mins] left.</div>
+      <form method="POST" action="{{ url_for('overview.index') }}">
+        <input type="hidden" name="action" value="cancel">
+        <button type="submit">Cancel</button>
+      </form>
     {% else %}
-        <a disabled>RUNNING...</a>
+      <div>WASHER BUSY....[{{ minutes_remaining }} mins] left.</div>
+      <div>in use by ({{ active_username }}).</div>
     {% endif %}
 
-  {% endif %}
-
-  <script>
-    function removeQueryParams() {
-      // Get the current URL without the query parameters
-      const baseUrl = window.location.origin + window.location.pathname;
-      
-      // Update the browser's URL without reloading the page
-      window.history.replaceState({}, document.title, baseUrl);
-    }
-    removeQueryParams();
-  </script>
 {% endblock %}

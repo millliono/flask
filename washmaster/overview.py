@@ -3,6 +3,7 @@ from flask import Blueprint
 from flask import flash
 from flask import g
 from flask import redirect
+from flask import session
 from flask import render_template
 from flask import request
 from flask import url_for
@@ -28,7 +29,7 @@ def decrease_credits():
     )
     db.commit()
     g.user = (
-        get_db().execute("SELECT * FROM user WHERE id = ?", (g.user['id'],)).fetchone()
+        get_db().execute("SELECT * FROM user WHERE id = ?", (session.get("user_id"),)).fetchone()
     )
 
 
@@ -39,34 +40,34 @@ def on_timer_end():
     started_timestamp = None
 
 
-@bp.route("/")
+@bp.route("/", methods=("GET", "POST"))
 @login_required
 def index():
     global active_username, started_timestamp
 
-    action = request.args.get('action', None)
-    
-    if action == 'start':
-        if active_username or started_timestamp:
-            flash('already running')
-        elif g.user['credits'] < 1:
-            flash('no credits')
-        else:
-            active_username = g.user['username']
-            started_timestamp = datetime.now()
-            decrease_credits()
-            # call api
-            timer = Timer(60 * WASH_CYCLE_MINUTES, on_timer_end)
-            timer.start()
-            flash('started!!!')
-    elif action == 'cancel':
-        if active_username != g.user['username']:
-            flash("already finished")
-        else:
+    if request.method == "POST":
+        action = request.form["action"]
+        
+        if action == 'start':
+            if active_username:
+                flash('*WASHER BUSY*')
+            elif g.user['credits'] < 1:
+                flash('*NOT ENOUGH CREDITS*')
+            else:
+                active_username = g.user['username']
+                started_timestamp = datetime.now()
+                decrease_credits()
+                # call api
+                timer = Timer(60 * WASH_CYCLE_MINUTES, on_timer_end)
+                timer.start()
+                flash('*WASHER ON*')
+        elif action == 'cancel':
             active_username = None
             started_timestamp = None
             # call api, optionally
-            flash('canceled')
+            flash('*WASHER OFF*')
+        
+        return redirect(url_for('overview.index'))
 
     if started_timestamp:
         minutes_remaining = WASH_CYCLE_MINUTES - int((datetime.now() - started_timestamp).total_seconds() // 60)

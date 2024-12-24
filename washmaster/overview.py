@@ -9,6 +9,7 @@ from flask import request
 from flask import url_for
 from werkzeug.exceptions import abort
 from threading import Timer
+import requests
 
 from .auth import login_required
 from .db import get_db
@@ -19,13 +20,22 @@ bp = Blueprint("overview", __name__)
 active_username = None
 started_timestamp = None
 
-WASH_CYCLE_MINUTES = 80
+WASH_CYCLE_MINUTES = 2
 WASH_CYCLE_COST = 5
 
-server = 'https://shelly-149-eu.shelly.cloud'
-apikey = 'MmJmMDM4dWlk7FA603986E0FEE7CDEFE52E5F53A96EBCD7BC7196DF0856E6AE90EA4B9E3D68E57F97605E0C5028D'
-device_id = 'b0b21c10f7fc'
 
+turnON = {
+    'channel': '0',
+    'turn': 'on',
+    'id': 'b0b21c10f7fc',
+    'auth_key': 'MmJmMDM4dWlk7FA603986E0FEE7CDEFE52E5F53A96EBCD7BC7196DF0856E6AE90EA4B9E3D68E57F97605E0C5028D',
+}
+turnOFF = {
+    'channel': '0',
+    'turn': 'off',
+    'id': 'b0b21c10f7fc',
+    'auth_key': 'MmJmMDM4dWlk7FA603986E0FEE7CDEFE52E5F53A96EBCD7BC7196DF0856E6AE90EA4B9E3D68E57F97605E0C5028D',
+}
 
 
 def decrease_credits():
@@ -41,7 +51,7 @@ def decrease_credits():
 
 def washer_off():
     global active_username, started_timestamp
-    # call the api
+    response = requests.post('https://shelly-149-eu.shelly.cloud/device/relay/control', data=turnOFF)
     active_username = None
     started_timestamp = None
 
@@ -63,10 +73,12 @@ def index():
                 active_username = g.user['username']
                 started_timestamp = datetime.now()
                 decrease_credits()
-                # call api
-                timer = Timer(60 * WASH_CYCLE_MINUTES, washer_off)
-                timer.start()
-                flash('*WASHER ON*')
+
+            response = requests.post('https://shelly-149-eu.shelly.cloud/device/relay/control', data=turnON)
+
+            timer = Timer(60 * WASH_CYCLE_MINUTES, washer_off)
+            timer.start()
+            flash('*WASHER ON*')
         elif action == 'cancel':
             if active_username != g.user['username']:
                 flash("*WASHER ALREADY OFF*")

@@ -19,8 +19,9 @@ bp = Blueprint("overview", __name__)
 
 active_username = None
 started_timestamp = None
+curr_timer = None
 
-WASH_CYCLE_MINUTES = 2
+WASH_CYCLE_MINUTES = 1
 WASH_CYCLE_COST = 5
 
 
@@ -50,16 +51,19 @@ def decrease_credits():
 
 
 def washer_off():
-    global active_username, started_timestamp
+    global active_username, started_timestamp, curr_timer
     response = requests.post('https://shelly-149-eu.shelly.cloud/device/relay/control', data=turnOFF)
     active_username = None
     started_timestamp = None
+    if curr_timer:
+        curr_timer.cancel()
+        curr_timer = None
 
 
 @bp.route("/", methods=("GET", "POST"))
 @login_required
 def index():
-    global active_username, started_timestamp
+    global active_username, started_timestamp, curr_timer
 
     if request.method == "POST":
         action = request.form["action"]
@@ -73,12 +77,10 @@ def index():
                 active_username = g.user['username']
                 started_timestamp = datetime.now()
                 decrease_credits()
-
-            response = requests.post('https://shelly-149-eu.shelly.cloud/device/relay/control', data=turnON)
-
-            timer = Timer(60 * WASH_CYCLE_MINUTES, washer_off)
-            timer.start()
-            flash('*WASHER ON*')
+                response = requests.post('https://shelly-149-eu.shelly.cloud/device/relay/control', data=turnON)
+                curr_timer = Timer(60 * WASH_CYCLE_MINUTES, washer_off)
+                curr_timer.start()
+                flash('*WASHER ON*')
         elif action == 'cancel':
             if active_username != g.user['username']:
                 flash("*WASHER ALREADY OFF*")

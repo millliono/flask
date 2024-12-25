@@ -52,7 +52,7 @@ def decrease_credits():
 
 def washer_off():
     global active_username, started_timestamp, curr_timer
-    response = requests.post('https://shelly-149-eu.shelly.cloud/device/relay/control', data=turnOFF)
+    response = requests.post('https://shelly-149-eu.shelly.cloud/device/relay/control', data=turnOFF, timeout=5)
     active_username = None
     started_timestamp = None
     if curr_timer:
@@ -65,7 +65,7 @@ def washer_off():
 def index():
     global active_username, started_timestamp, curr_timer
 
-    if request.method == "POST":
+    if request.method == "POST":#edw na mpei getonline
         action = request.form["action"]
         
         if action == 'start':
@@ -77,7 +77,7 @@ def index():
                 active_username = g.user['username']
                 started_timestamp = datetime.now()
                 decrease_credits()
-                response = requests.post('https://shelly-149-eu.shelly.cloud/device/relay/control', data=turnON)
+                response = requests.post('https://shelly-149-eu.shelly.cloud/device/relay/control', data=turnON, timeout=5)
                 curr_timer = Timer(60 * WASH_CYCLE_MINUTES, washer_off)
                 curr_timer.start()
                 flash('*WASHER ON*')

@@ -12,17 +12,28 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: serif;
-  color: #377ba8;
+  color: #17198bab;
   margin: 1rem 0;
 }
 
 a {
-  color: #377ba8;
+  color: #17198b;
 }
 
 hr {
   border: none;
-  border-top: 1px solid lightgray;
+  border-top: 1px solid rgb(211, 211, 211);
+}
+
+footer {
+  text-align: left; 
+  padding: 0 0.5rem; 
+  background-color: lightgray;
+}
+
+footer p {
+  font-family: cursive;
+  font-size: small;
 }
 
 nav {

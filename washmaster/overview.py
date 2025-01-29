@@ -101,4 +101,6 @@ def index():
 @bp.route("/admin_dashboard")
 @admin_required
 def admin_dashboard():
-    return render_template("admin_dashboard.html")
+    db = get_db()
+    users = db.execute("SELECT id, username, credits FROM user").fetchall()
+    return render_template("admin_dashboard.html", users=users)

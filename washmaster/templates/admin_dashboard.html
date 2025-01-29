@@ -1,9 +1,26 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1>{% block title %}Login{% endblock %}</h1>
+<h1>{% block title %}Dashboard{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-    <p> THIS IS THE ADMIN PAGE</p>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Credits</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user[0] }}</td> <!-- ID -->
+            <td>{{ user[1] }}</td> <!-- username -->
+            <td>{{ user[2] }}</td> <!-- credits -->
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}

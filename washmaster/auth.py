@@ -32,7 +32,7 @@ def admin_required(view):
     def wrapped_view(*args, **kwargs):
         if g.user is None or not g.user["is_admin"]:
             flash("Access denied.", "error")
-            return redirect(url_for("auth.login"))
+            return redirect(url_for("overview.index"))
 
         return view(**kwargs)
 

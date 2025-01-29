@@ -98,9 +98,35 @@ def index():
     return render_template("overview.html", available=active_username is None, active_username=active_username, minutes_remaining=minutes_remaining, credits=g.user['credits'])
 
 
-@bp.route("/admin_dashboard")
+@bp.route("/admin_dashboard", methods=("GET", "POST"))
 @admin_required
 def admin_dashboard():
+    if request.method == "POST":
+        id = request.form["id"]
+        credits = request.form["credits"]
+        error = None
+
+        if not id:
+            error = "Id is required."
+        elif not credits:
+            error = "Set credits is required."
+
+        if error is None:
+            db = get_db()
+            user = db.execute(
+                "SELECT * FROM user WHERE id = ?", (id,)
+            ).fetchone()
+            if user is None:
+                error = "User not found."
+            else:
+                db.execute(
+                    "UPDATE user SET credits = ? WHERE id = ?", (credits, id)
+                )
+                db.commit()
+                flash(f"Updated [{user["username"]}] with [{credits}] credits.")
+                return redirect(url_for("overview.admin_dashboard"))
+        flash(error)
+
     db = get_db()
     users = db.execute("SELECT id, username, credits FROM user").fetchall()
     return render_template("admin_dashboard.html", users=users)

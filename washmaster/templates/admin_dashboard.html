@@ -5,6 +5,14 @@
 {% endblock %}
 
 {% block content %}
+<form id="admin_form" method="POST">
+    <label for="id">Id:</label>
+    <input type="number" name="id" id="id">
+    <label for="credits">Set Credits:</label>
+    <input type="number" name="credits" id="credits">
+    <button type="submit">Update</button>
+</form>
+
 <table>
     <thead>
         <tr>

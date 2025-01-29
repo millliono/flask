@@ -7,6 +7,8 @@ flask --app washmaster init-db
 * there after:
 
 flask --app washmaster run --debug
+flask --app washmaster run --host=0.0.0.0 --debug
+
 
 
 

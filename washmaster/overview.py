@@ -11,7 +11,7 @@ from werkzeug.exceptions import abort
 from threading import Timer
 import requests
 
-from .auth import login_required
+from .auth import login_required, admin_required
 from .db import get_db
 
 bp = Blueprint("overview", __name__)
@@ -97,3 +97,8 @@ def index():
 
     return render_template("overview.html", available=active_username is None, active_username=active_username, minutes_remaining=minutes_remaining, credits=g.user['credits'])
 
+
+@bp.route("/admin_dashboard")
+@admin_required
+def admin_dashboard():
+    return render_template("admin_dashboard.html")

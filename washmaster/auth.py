@@ -27,6 +27,18 @@ def login_required(view):
     return wrapped_view
 
 
+def admin_required(view):
+    @functools.wraps(view)
+    def wrapped_view(*args, **kwargs):
+        if g.user is None or not g.user["is_admin"]:
+            flash("Access denied.", "error")
+            return redirect(url_for("auth.login"))
+
+        return view(**kwargs)
+
+    return wrapped_view
+
+
 @bp.before_app_request
 def load_logged_in_user():
     user_id = session.get("user_id")
@@ -62,7 +74,7 @@ def register():
             except db.IntegrityError:
                 error = f"User {username} is already registered."
             else:
-                return redirect(url_for("auth.login")) # TODO redirect to overview
+                return redirect(url_for("auth.login"))  # TODO redirect to overview
 
         flash(error)
 
@@ -77,7 +89,7 @@ def login():
         password = request.form["password"]
         db = get_db()
         error = None
-        
+
         user = db.execute(
             "SELECT * FROM user WHERE username = ?", (username,)
         ).fetchone()
@@ -91,7 +103,11 @@ def login():
             # store the user id in a new session and return to the index
             session.clear()
             session["user_id"] = user["id"]
-            return redirect(url_for("overview.index"))
+            return redirect(
+                url_for(
+                    "overview.admin_dashboard" if user["is_admin"] else "overview.index"
+                )
+            )
 
         flash(error)
 

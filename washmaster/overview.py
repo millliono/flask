@@ -6,10 +6,13 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
+from flask import render_template_string
+
 
 from .auth import login_required, admin_required
 from .db import get_db
 from .device_controller import DeviceController
+from .logs import app_logger, LOG_FILE_PATH
 
 washer = DeviceController("washer")
 dryer = DeviceController("dryer")
@@ -40,6 +43,24 @@ def index():
     )
 
 
+@bp.route("/admin/logs")
+@admin_required
+def view_logs():
+    try:
+        with open(LOG_FILE_PATH, "r") as f:
+            logs = f.readlines()
+    except FileNotFoundError:
+        logs = ["Log file not found."]
+
+    return render_template_string(
+        """
+    <h1>Transaction Logs</h1>
+    <pre style="background-color: #f8f9fa; padding: 10px; font-size: 17px;">{{ logs }}</pre>
+    """,
+        logs="".join(logs),
+    )
+
+
 @bp.route("/admin_dashboard", methods=("GET", "POST"))
 @admin_required
 def admin_dashboard():
@@ -62,6 +83,7 @@ def admin_dashboard():
                 db.execute("UPDATE user SET credits = ? WHERE id = ?", (credits, id))
                 db.commit()
                 flash(f"Updated [{user["username"]}] with [{credits}] credits.")
+                app_logger.info(f"User [{user["username"]}] bought [{credits}] credits.")
                 return redirect(url_for("overview.admin_dashboard"))
         flash(error)
 

@@ -7,20 +7,19 @@
 {% block content %}
 <div>Hello {{ g.user.username }}, you have [{{ credits }}] credits.</div>
 {% if available %}
-<div>Washer --> available</div>
-<form method="POST" action="{{ url_for('overview.index') }}">
-  <input type="hidden" name="action" value="start">
-  <button type="submit">Start washing</button>
-</form>
+  <div>Washer --> available</div>
+  <form method="POST" action="{{ url_for('overview.index') }}">
+    <input type="hidden" name="action" value="start">
+    <button type="submit">Start washing</button>
+  </form>
 {% elif active_username == g.user['username'] %}
-<div>WASHING....[{{ minutes_remaining }} mins] left.</div>
-<form method="POST" action="{{ url_for('overview.index') }}">
-  <input type="hidden" name="action" value="cancel">
-  <button type="submit">Cancel</button>
-</form>
+  <div>WASHING....[{{ minutes_remaining }} mins] left.</div>
+  <form method="POST" action="{{ url_for('overview.index') }}">
+    <input type="hidden" name="action" value="cancel">
+    <button type="submit">Cancel</button>
+  </form>
 {% else %}
-<div>WASHER BUSY....[{{ minutes_remaining }} mins] left.</div>
-<div>in use by ({{ active_username }}).</div>
+  <div>WASHER BUSY....[{{ minutes_remaining }} mins] left.</div>
+  <div>in use by ({{ active_username }}).</div>
 {% endif %}
-
 {% endblock %}

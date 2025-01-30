@@ -82,8 +82,8 @@ def admin_dashboard():
             else:
                 db.execute("UPDATE user SET credits = ? WHERE id = ?", (credits, id))
                 db.commit()
-                flash(f"Updated [{user["username"]}] with [{credits}] credits.")
-                app_logger.info(f"User [{user["username"]}] bought [{credits}] credits.")
+                flash(f"Updated [{user['username']}] with [{credits}] credits.")
+                app_logger.info(f"User [{user['username']}] bought [{credits}] credits.")
                 return redirect(url_for("overview.admin_dashboard"))
         flash(error)
 

@@ -50,3 +50,19 @@ curl -X POST https://shelly-149-eu.shelly.cloud/device/relay/control -d "channel
 
 --OFF
 curl -X POST https://shelly-149-eu.shelly.cloud/device/relay/control -d "channel=0&turn=off&id=b0b21c10f7fc&auth_key=MmJmMDM4dWlk7FA603986E0FEE7CDEFE52E5F53A96EBCD7BC7196DF0856E6AE90EA4B9E3D68E57F97605E0C5028D"
+
+# How to deploy
+
+```sh
+sudo cp washmaster.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl start washmaster.service
+sudo systemctl enable washmaster.service
+```
+
+then to monitor the logs:
+
+```sh
+sudo systemctl status washmaster.service
+journalctl -u washmaster.service
+```

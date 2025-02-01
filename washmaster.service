@@ -1,0 +1,13 @@
+[Unit]
+Description=Washmaster Flask Application
+After=network.target
+
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/flask
+ExecStart=/usr/local/bin/waitress-serve --call 'washmaster:create_app'
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

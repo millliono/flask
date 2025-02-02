@@ -149,3 +149,45 @@ input[type=submit] {
   align-self: start;
   min-width: 10em;
 }
+
+.device-container {
+  display: flex;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.device {
+  flex: 1;
+  padding: 1.5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.device h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.device form {
+  margin-top: 1rem;
+}
+
+.device button {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.device button[name="action"][value="cancel"] {
+  background-color: #e74c3c;
+}
+
+.device button:hover {
+  opacity: 0.9;
+}

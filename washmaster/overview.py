@@ -22,23 +22,36 @@ bp = Blueprint("overview", __name__)
 @bp.route("/", methods=("GET", "POST"))
 @login_required
 def index():
-    if request.method == "POST":  # edw na mpei getonline
+    if request.method == "POST":
         action = request.form["action"]
-        washer.handle_device_action(action, g)
+        device = request.form["device"]
+        if device == "washer":
+            washer.handle_device_action(action, g)
+        elif device == "dryer":
+            dryer.handle_device_action(action, g)
         return redirect(url_for("overview.index"))
 
+    washer_minutes = None
+    dryer_minutes = None
+
     if washer.started_timestamp:
-        minutes_remaining = washer.config["duration_minutes"] - int(
+        washer_minutes = washer.config["duration_minutes"] - int(
             (datetime.now() - washer.started_timestamp).total_seconds() // 60
         )
-    else:
-        minutes_remaining = None
+
+    if dryer.started_timestamp:
+        dryer_minutes = dryer.config["duration_minutes"] - int(
+            (datetime.now() - dryer.started_timestamp).total_seconds() // 60
+        )
 
     return render_template(
         "overview.html",
-        available=washer.active_username is None,
-        active_username=washer.active_username,
-        minutes_remaining=minutes_remaining,
+        washer_available=washer.active_username is None,
+        washer_active_username=washer.active_username,
+        washer_minutes_remaining=washer_minutes,
+        dryer_available=dryer.active_username is None,
+        dryer_active_username=dryer.active_username,
+        dryer_minutes_remaining=dryer_minutes,
         credits=g.user["credits"],
     )
 

@@ -5,11 +5,19 @@
 {% endblock %}
 
 {% block content %}
-<div>Hello {{ g.user.username }}, you have [{{ credits }}] credits.</div>
+<div class="credits-container">
+  <div class="billiard-ball">
+    <span class="credits-number">{{ credits }}</span>
+  </div>
+  <span class="credits-label">credits remaining</span>
+</div>
 
 <div class="device-container">
   <div class="device washer">
-    <h2>Washer</h2>
+    <div class="device-header">
+      <span class="material-icons-round device-icon">local_laundry_service</span>
+      <h2>Washer</h2>
+    </div>
     {% if washer_available %}
       <div>Status: Available</div>
       <form method="POST" action="{{ url_for('overview.index') }}">
@@ -31,7 +39,10 @@
   </div>
 
   <div class="device dryer">
-    <h2>Dryer</h2>
+    <div class="device-header">
+      <span class="material-icons-round device-icon">dry_cleaning</span>
+      <h2>Dryer</h2>
+    </div>
     {% if dryer_available %}
       <div>Status: Available</div>
       <form method="POST" action="{{ url_for('overview.index') }}">

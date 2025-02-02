@@ -1,5 +1,5 @@
 html {
-  font-family: sans-serif;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   background: #eee;
   padding: 1rem;
 }
@@ -11,7 +11,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: serif;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   color: #17198bab;
   margin: 1rem 0;
 }
@@ -164,9 +164,27 @@ input[type=submit] {
   background-color: #f9f9f9;
 }
 
+.device-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.device-icon {
+  font-size: 2rem;
+  color: #333;
+  background: #f5f5f5;
+  padding: 0.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .device h2 {
-  margin-top: 0;
-  margin-bottom: 1rem;
+  margin: 0;
+  font-size: 1.25rem;
   color: #333;
 }
 
@@ -190,4 +208,53 @@ input[type=submit] {
 
 .device button:hover {
   opacity: 0.9;
+}
+
+.credits-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.billiard-ball {
+  width: 40px;
+  height: 40px;
+  background: #111;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    inset -3px -3px 6px rgba(0,0,0,0.5),
+    inset 3px 3px 6px rgba(255,255,255,0.1),
+    0 1px 3px rgba(0,0,0,0.2);
+  position: relative;
+  border: 1px solid #000;
+}
+
+.billiard-ball::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 10px;
+  height: 10px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  filter: blur(1px);
+}
+
+.credits-number {
+  color: white;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  font-size: 1.125rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.credits-label {
+  color: #666;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  font-size: 1rem;
 }

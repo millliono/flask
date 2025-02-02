@@ -43,6 +43,7 @@ class DeviceController:
     def turnON_and_startTimer(self):
         response = requests.post(self.cloud, data=self.config["turnON"], timeout=5)
         self.curr_timer = Timer(60 * self.config["duration_minutes"], self.turnOFF)
+        self.curr_timer.start()
 
     def handle_device_action(self, action, g):
         if action == "start":

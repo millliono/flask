@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1>{% block title %}Overview{% endblock %}</h1>
+<h1>{% block title %}{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
@@ -9,7 +9,7 @@
   <div class="billiard-ball">
     <span class="credits-number">{{ credits }}</span>
   </div>
-  <span class="credits-label">credits remaining</span>
+  <span class="credits-label">credits left</span>
 </div>
 
 <div class="device-container">

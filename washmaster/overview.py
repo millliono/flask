@@ -35,14 +35,14 @@ def index():
     dryer_minutes = None
 
     if washer.started_timestamp:
-        washer_minutes = washer.config["duration_minutes"] - int(
-            (datetime.now() - washer.started_timestamp).total_seconds() // 60
-        )
+        elapsed_minutes = (datetime.now() - washer.started_timestamp).seconds // 60
+        washer_minutes = washer.config["duration_minutes"] - elapsed_minutes
+
 
     if dryer.started_timestamp:
-        dryer_minutes = dryer.config["duration_minutes"] - int(
-            (datetime.now() - dryer.started_timestamp).total_seconds() // 60
-        )
+        elapsed_minutes = (datetime.now() - washer.started_timestamp).seconds // 60
+        dryer_minutes = dryer.config["duration_minutes"] - elapsed_minutes
+
 
     return render_template(
         "overview.html",

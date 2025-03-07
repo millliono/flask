@@ -19,6 +19,19 @@ class DeviceController:
         self.curr_timer = None
         self.cloud = "https://shelly-149-eu.shelly.cloud/device/relay/control"
 
+    def get_status(self):
+        try:
+            response = requests.post(
+                "https://shelly-149-eu.shelly.cloud/device/status",
+                data=self.config["status"],
+                timeout=5,
+            )
+            response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+            response_json = response.json()
+            return response_json
+        except requests.exceptions.RequestException as e:
+            return None
+
     def pay(self):
         db = get_db()
         db.execute(
@@ -32,34 +45,43 @@ class DeviceController:
             .fetchone()
         )
 
-    def turnOFF(self):
-        response = requests.post(self.cloud, data=self.config["turnOFF"], timeout=5)
-        self.active_username = None
-        self.started_timestamp = None
-        if self.curr_timer:
-            self.curr_timer.cancel()
-            self.curr_timer = None
+    def send_request(self, data, timeout):
+        try:
+            response = requests.post(self.cloud, data=data, timeout=timeout)
+            response.raise_for_status()
+        except requests.exceptions.RequestException:
+            flash("*error: BAD REQUEST*")
+            return False
+        return True
 
-    def turnON_and_startTimer(self):
-        response = requests.post(self.cloud, data=self.config["turnON"], timeout=5)
-        self.curr_timer = Timer(60 * self.config["duration_minutes"], self.turnOFF)
-        self.curr_timer.start()
+    def start_device(self, g):
+        if self.send_request(self.config["turnON"], timeout=5):
+            self.active_username = g.user["username"]
+            self.started_timestamp = datetime.now()
+            self.pay()
+            self.curr_timer = Timer(60 * self.config["duration_minutes"], self.cancel_device)
+            self.curr_timer.start()
+            flash(f"*{self.device_name.upper()} ON*")
+
+    def cancel_device(self, g):
+        if self.send_request(self.config["turnOFF"], timeout=5):
+            self.active_username = None
+            self.started_timestamp = None
+            if self.curr_timer:
+                self.curr_timer.cancel()
+                self.curr_timer = None
+            flash(f"*{self.device_name.upper()} OFF*")
 
     def handle_device_action(self, action, g):
         if action == "start":
             if self.active_username:
                 flash(f"*{self.device_name.upper()} BUSY*")
             elif g.user["credits"] < self.config["cost"]:
-                flash(f"*NOT ENOUGH CREDITS*")
+                flash("*NOT ENOUGH CREDITS*")
             else:
-                self.active_username = g.user["username"]
-                self.started_timestamp = datetime.now()
-                self.pay()
-                self.turnON_and_startTimer()
-                flash(f"*{self.device_name.upper()} ON*")
+                self.start_device(g)
         elif action == "cancel":
             if self.active_username != g.user["username"]:
                 flash(f"*{self.device_name.upper()} ALREADY OFF*")
             else:
-                self.turnOFF()
-                flash(f"*{self.device_name.upper()} OFF*")
+                self.cancel_device(g)

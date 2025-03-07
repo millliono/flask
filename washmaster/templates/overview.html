@@ -1,25 +1,66 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1>{% block title %}Overview{% endblock %}</h1>
+<h1>{% block title %}{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-<div>Hello {{ g.user.username }}, you have [{{ credits }}] credits.</div>
-{% if available %}
-  <div>Washer --> available</div>
-  <form method="POST" action="{{ url_for('overview.index') }}">
-    <input type="hidden" name="action" value="start">
-    <button type="submit">Start washing</button>
-  </form>
-{% elif active_username == g.user['username'] %}
-  <div>WASHING....[{{ minutes_remaining }} mins] left.</div>
-  <form method="POST" action="{{ url_for('overview.index') }}">
-    <input type="hidden" name="action" value="cancel">
-    <button type="submit">Cancel</button>
-  </form>
-{% else %}
-  <div>WASHER BUSY....[{{ minutes_remaining }} mins] left.</div>
-  <div>in use by ({{ active_username }}).</div>
-{% endif %}
+<div class="credits-container">
+  <div class="billiard-ball">
+    <span class="credits-number">{{ credits }}</span>
+  </div>
+  <span class="credits-label">credits left</span>
+</div>
+
+<div class="device-container">
+  <div class="device washer">
+    <div class="device-header">
+      <span class="material-icons-round device-icon">local_laundry_service</span>
+      <h2>Washer</h2>
+    </div>
+    {% if washer_available %}
+      <div>Status: Available</div>
+      <form method="POST" action="{{ url_for('overview.index') }}">
+        <input type="hidden" name="device" value="washer">
+        <input type="hidden" name="action" value="start">
+        <button type="submit">Start washing</button>
+      </form>
+    {% elif washer_active_username == g.user['username'] %}
+      <div>Status: WASHING....[{{ washer_minutes_remaining }} mins] left.</div>
+      <form method="POST" action="{{ url_for('overview.index') }}">
+        <input type="hidden" name="device" value="washer">
+        <input type="hidden" name="action" value="cancel">
+        <button type="submit">Cancel</button>
+      </form>
+    {% else %}
+      <div>Status: BUSY....[{{ washer_minutes_remaining }} mins] left.</div>
+      <div>in use by ({{ washer_active_username }}).</div>
+    {% endif %}
+  </div>
+
+  <div class="device dryer">
+    <div class="device-header">
+      <span class="material-icons-round device-icon">dry_cleaning</span>
+      <h2>Dryer</h2>
+    </div>
+    {% if dryer_available %}
+      <div>Status: Available</div>
+      <form method="POST" action="{{ url_for('overview.index') }}">
+        <input type="hidden" name="device" value="dryer">
+        <input type="hidden" name="action" value="start">
+        <button type="submit">Start drying</button>
+      </form>
+    {% elif dryer_active_username == g.user['username'] %}
+      <div>Status: DRYING....[{{ dryer_minutes_remaining }} mins] left.</div>
+      <form method="POST" action="{{ url_for('overview.index') }}">
+        <input type="hidden" name="device" value="dryer">
+        <input type="hidden" name="action" value="cancel">
+        <button type="submit">Cancel</button>
+      </form>
+    {% else %}
+      <div>Status: BUSY....[{{ dryer_minutes_remaining }} mins] left.</div>
+      <div>in use by ({{ dryer_active_username }}).</div>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}

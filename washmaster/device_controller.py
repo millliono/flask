@@ -63,7 +63,7 @@ class DeviceController:
             self.curr_timer.start()
             flash(f"*{self.device_name.upper()} ON*")
 
-    def cancel_device(self, g):
+    def cancel_device(self):
         if self.send_request(self.config["turnOFF"], timeout=5):
             self.active_username = None
             self.started_timestamp = None
@@ -84,4 +84,4 @@ class DeviceController:
             if self.active_username != g.user["username"]:
                 flash(f"*{self.device_name.upper()} ALREADY OFF*")
             else:
-                self.cancel_device(g)
+                self.cancel_device()

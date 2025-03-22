@@ -52,9 +52,14 @@ class DeviceController:
         except requests.exceptions.RequestException:
             flash("*error: BAD REQUEST*")
             return False
-        return True
+        else:
+            return True
 
     def start_device(self, g):
+        if self.curr_timer: 
+            self.curr_timer.cancel()
+            self.curr_timer = None
+
         if self.send_request(self.config["turnON"], timeout=5):
             self.active_username = g.user["username"]
             self.started_timestamp = datetime.now()

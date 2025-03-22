@@ -8,7 +8,7 @@ flask --app washmaster init-db
 
 flask --app washmaster run --debug
 flask --app washmaster run --host=0.0.0.0 --debug
-
+sudo /home/aimiliosdraginis/venv/bin/waitress-serve --listen=0.0.0.0:80 --call 'washmaster:create_app'
 
 
 

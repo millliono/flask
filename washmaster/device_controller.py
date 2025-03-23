@@ -19,7 +19,7 @@ class DeviceController:
         self.curr_timer = None
         self.cloud = "https://shelly-149-eu.shelly.cloud/device/relay/control"
 
-    def get_status(self):
+    def is_online(self):
         try:
             response = requests.post(
                 "https://shelly-149-eu.shelly.cloud/device/status",
@@ -27,10 +27,15 @@ class DeviceController:
                 timeout=5,
             )
             response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
-            response_json = response.json()
-            return response_json
         except requests.exceptions.RequestException as e:
             return None
+        else:
+            response_json = response.json()
+            if response_json["data"]["online"]:
+                return True
+            else:
+                return False
+
 
     def pay(self):
         db = get_db()
@@ -56,17 +61,21 @@ class DeviceController:
             return True
 
     def start_device(self, g):
-        if self.curr_timer: 
-            self.curr_timer.cancel()
-            self.curr_timer = None
+        if not self.is_online():
+            flash(f"*SERVICE OFFLINE*")
+            return
+        else:
+            if self.curr_timer: 
+                self.curr_timer.cancel()
+                self.curr_timer = None
 
-        if self.send_request(self.config["turnON"], timeout=5):
-            self.active_username = g.user["username"]
-            self.started_timestamp = datetime.now()
-            self.pay()
-            self.curr_timer = Timer(60 * self.config["duration_minutes"], self.cancel_device)
-            self.curr_timer.start()
-            flash(f"*{self.device_name.upper()} ON*")
+            if self.send_request(self.config["turnON"], timeout=5):
+                self.active_username = g.user["username"]
+                self.started_timestamp = datetime.now()
+                self.pay()
+                self.curr_timer = Timer(60 * self.config["duration_minutes"], self.cancel_device)
+                self.curr_timer.start()
+                flash(f"*{self.device_name.upper()} ON*")
 
     def cancel_device(self):
         if self.send_request(self.config["turnOFF"], timeout=5):

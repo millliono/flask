@@ -40,7 +40,7 @@ def index():
 
 
     if dryer.started_timestamp:
-        elapsed_minutes = (datetime.now() - washer.started_timestamp).seconds // 60
+        elapsed_minutes = (datetime.now() - dryer.started_timestamp).seconds // 60
         dryer_minutes = dryer.config["duration_minutes"] - elapsed_minutes
 
 
